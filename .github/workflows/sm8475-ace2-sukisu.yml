@@ -1,0 +1,206 @@
+name: 构建SM8475-ace2内核
+
+on:
+  workflow_call:
+    inputs:
+      upload_alist:
+        required: false
+        type: boolean
+        default: false
+        
+  workflow_dispatch:
+
+jobs:
+  
+  build:
+    
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: Maximize build space
+      uses: easimon/maximize-build-space@master
+      with:
+        root-reserve-mb: 8192
+        temp-reserve-mb: 2048
+        remove-dotnet: 'true'
+        remove-android: 'true'
+        remove-haskell: 'true'
+        remove-codeql: 'true'
+
+    - name: Configure Git
+      run: |
+         git config --global user.name "KingGoldXu"
+         git config --global user.email "857442867@qq.com"
+    
+    - name: 安装repo
+      run: |
+        curl https://storage.googleapis.com/git-repo-downloads/repo > ~/repo
+        chmod a+x ~/repo
+        sudo mv ~/repo /usr/local/bin/repo
+    
+    - name: 安装编译环境
+      run: |
+        sudo apt update && sudo apt upgrade -y
+        sudo apt install curl git python3 zip python3-pip -y
+        pip3 install requests_toolbelt requests
+
+    - name: 拉取oneplus ace2内核清单
+      run: |
+        mkdir kernel && cd kernel
+        repo init -u https://github.com/OnePlusOSS/kernel_manifest.git -b oneplus/sm8475 -m oneplus_ace2_v.xml --depth=1
+        repo sync -j$(nproc --all)
+        sed -i 's/export REPACK_IMG=true/export REPACK_IMG=false/Ig' kernel_platform/oplus/build/oplus_setup.sh
+        sed -i 's/ -dirty$//' kernel_platform/common/scripts/setlocalversion
+        # sed -i 's/EXTRAVERSION =/EXTRAVERSION =-KingXu/I' kernel_platform/common/Makefile
+        # sed -i '1i CONFIG_LOCALVERSION="-KingXu"' kernel_platform/common/arch/arm64/configs/gki_defconfig
+        
+    - name: 添加SukiSU
+      run: |
+        cd kernel/kernel_platform
+        curl -LSs "https://raw.githubusercontent.com/ShirkNeko/SukiSU-Ultra/main/kernel/setup.sh" | bash -s susfs-dev
+        cd ./KernelSU
+        KSU_VERSION=$(expr $(/usr/bin/git rev-list --count main) "+" 10606)
+        export KSU_VERSION=$KSU_VERSION
+        sed -i "s/DKSU_VERSION=12800/DKSU_VERSION=${KSU_VERSION}/" kernel/Makefile
+
+    - name: Apply SUSFS Patches SukiSU
+      run: |
+        cd kernel
+        git clone https://gitlab.com/simonpunk/susfs4ksu.git -b gki-android12-5.10
+        git clone https://github.com/ShirkNeko/SukiSU_patch.git
+        cd kernel_platform
+
+        # Copy SUSFS patches
+        cp ../susfs4ksu/kernel_patches/50_add_susfs_in_gki-android12-5.10.patch ./common/
+        cp ../susfs4ksu/kernel_patches/fs/* ./common/fs/
+        cp ../susfs4ksu/kernel_patches/include/linux/* ./common/include/linux/
+
+        # lz4k
+        # cp -r ../SukiSU_patch/other/lz4k/include/linux/* ./common/include/linux
+        # cp -r ../SukiSU_patch/other/lz4k/lib/* ./common/lib
+        # cp -r ../SukiSU_patch/other/lz4k/crypto/* ./common/crypto
+          
+        echo "正在给内核打susfs补丁"
+        cd ./common
+        patch -p1 < 50_add_susfs_in_gki-android12-5.10.patch
+        echo "完成"
+          
+    - name: Apply Hide Stuff Patches
+      run: |
+        cd kernel/kernel_platform/common
+        #cp ../../SukiSU_patch/69_hide_stuff.patch ./
+        #echo "正在打隐藏应用补丁"
+        #patch -p1 -F 3 < 69_hide_stuff.patch
+         
+    - name: Apply New Hooks Patches
+      run: |
+        cd kernel/kernel_platform/common
+        cp ../../SukiSU_patch/hooks/syscall_hooks.patch ./
+        echo "正在打vfs补丁"
+        patch -p1 -F 3 < syscall_hooks.patch
+        echo "完成"
+
+        #  cp ../../SukiSU_patch/other/lz4k_patch/${{ github.event.inputs.KERNEL_VERSION }}/lz4kd.patch ./
+        #  patch -p1 -F 3 < lz4kd.patch || true
+
+    - name: Add SUSFS Configuration Settings
+      run: |
+        cd kernel/kernel_platform
+        # Add KSU configuration settings
+        echo "CONFIG_KSU=y" >> ./common/arch/arm64/configs/gki_defconfig
+
+        echo "CONFIG_KPM=y" >> ./common/arch/arm64/configs/gki_defconfig
+
+        # Add VFS configuration settings
+        # if [[ "${{ github.event.inputs.VFS_patch_ENABLED }}" == 'enable' ]]; then
+        echo "CONFIG_KSU_SUSFS_SUS_SU=n" >> ./common/arch/arm64/configs/gki_defconfig
+        echo "CONFIG_KSU_MANUAL_HOOK=y" >> ./common/arch/arm64/configs/gki_defconfig
+          
+        # Add SUSFS configuration settings
+        echo "CONFIG_KSU_SUSFS=y" >> ./common/arch/arm64/configs/gki_defconfig
+        echo "CONFIG_KSU_SUSFS_HAS_MAGIC_MOUNT=y" >> ./common/arch/arm64/configs/gki_defconfig
+        echo "CONFIG_KSU_SUSFS_SUS_PATH=y" >> ./common/arch/arm64/configs/gki_defconfig
+        echo "CONFIG_KSU_SUSFS_SUS_MOUNT=y" >> ./common/arch/arm64/configs/gki_defconfig
+        echo "CONFIG_KSU_SUSFS_AUTO_ADD_SUS_KSU_DEFAULT_MOUNT=y" >> ./common/arch/arm64/configs/gki_defconfig
+        echo "CONFIG_KSU_SUSFS_AUTO_ADD_SUS_BIND_MOUNT=y" >> ./common/arch/arm64/configs/gki_defconfig
+        echo "CONFIG_KSU_SUSFS_SUS_KSTAT=y" >> ./common/arch/arm64/configs/gki_defconfig
+        echo "CONFIG_KSU_SUSFS_SUS_OVERLAYFS=n" >> ./common/arch/arm64/configs/gki_defconfig
+        echo "CONFIG_KSU_SUSFS_TRY_UMOUNT=y" >> ./common/arch/arm64/configs/gki_defconfig
+        echo "CONFIG_KSU_SUSFS_AUTO_ADD_TRY_UMOUNT_FOR_BIND_MOUNT=y" >> ./common/arch/arm64/configs/gki_defconfig
+        echo "CONFIG_KSU_SUSFS_SPOOF_UNAME=y" >> ./common/arch/arm64/configs/gki_defconfig
+        echo "CONFIG_KSU_SUSFS_ENABLE_LOG=y" >> ./common/arch/arm64/configs/gki_defconfig
+        echo "CONFIG_KSU_SUSFS_HIDE_KSU_SUSFS_SYMBOLS=y" >> ./common/arch/arm64/configs/gki_defconfig
+        echo "CONFIG_KSU_SUSFS_SPOOF_CMDLINE_OR_BOOTCONFIG=y" >> ./common/arch/arm64/configs/gki_defconfig
+        echo "CONFIG_KSU_SUSFS_OPEN_REDIRECT=y" >> ./common/arch/arm64/configs/gki_defconfig
+
+        #if [ "${{ github.event.inputs.KERNEL_VERSION }}" = "5.10" ]; then
+        #  echo "CONFIG_ZSMALLOC=y" >> ./common/arch/arm64/configs/gki_defconfig
+        #  echo "CONFIG_ZRAM=y" >> ./common/arch/arm64/configs/gki_defconfig
+        #  echo "CONFIG_MODULE_SIG=n" >> ./common/arch/arm64/configs/gki_defconfig
+        #  echo "CONFIG_CRYPTO_LZO=y" >> ./common/arch/arm64/configs/gki_defconfig
+        #  echo "CONFIG_ZRAM_DEF_COMP_LZ4KD=y" >> ./common/arch/arm64/configs/gki_defconfig
+        #fi
+
+        #if [ "${{ github.event.inputs.KERNEL_VERSION }}" != "6.6" ] && [ "${{ github.event.inputs.KERNEL_VERSION }}" != "5.10" ]; then
+        #  sed -i 's/CONFIG_MODULE_SIG=y/CONFIG_MODULE_SIG=n/g' ./common/arch/arm64/configs/gki_defconfig
+        #  sed -i 's/CONFIG_ZSMALLOC=m/CONFIG_ZSMALLOC=y/g' ./common/arch/arm64/configs/gki_defconfig
+        #  sed -i 's/CONFIG_ZRAM=m/CONFIG_ZRAM=y/g' ./common/arch/arm64/configs/gki_defconfig
+        #fi
+
+        #if [ "${{ github.event.inputs.KERNEL_VERSION }}" = "6.6" ]; then
+        #  echo "CONFIG_ZSMALLOC=y" >> ./common/arch/arm64/configs/gki_defconfig
+        #  sed -i 's/CONFIG_ZRAM=m/CONFIG_ZRAM=y/g' ./common/arch/arm64/configs/gki_defconfig
+        #fi
+
+        #if grep -q "CONFIG_ZSMALLOC=y" ./common/arch/arm64/configs/gki_defconfig && grep -q "CONFIG_ZRAM=y" ./common/arch/arm64/configs/gki_defconfig; then
+        #  echo "CONFIG_CRYPTO_LZ4HC=y" >> ./common/arch/arm64/configs/gki_defconfig
+        #  echo "CONFIG_CRYPTO_LZ4K=y" >> ./common/arch/arm64/configs/gki_defconfig
+        #  echo "CONFIG_CRYPTO_LZ4KD=y" >> ./common/arch/arm64/configs/gki_defconfig
+        #  echo "CONFIG_CRYPTO_842=y" >> ./common/arch/arm64/configs/gki_defconfig
+        #fi
+          
+        # Remove check_defconfig
+        sed -i 's/check_defconfig//' ./common/build.config.gki
+
+    - name: 编译内核
+      run: |
+        cd kernel
+        export LTO=thin
+        ./kernel_platform/oplus/build/oplus_build_kernel.sh waipio gki
+
+    - name: Make AnyKernel3
+      run: |
+        git clone https://github.com/Kernel-SU/AnyKernel3 --depth=1
+        rm -rf ./AnyKernel3/.git
+        # kernel/kernel_platform/out/msm-waipio-waipio-gki/gki_kernel/dist/Image
+
+    - name: Apply patch_linux and replace Image
+      run: |
+        cd kernel/kernel_platform/out/msm-waipio-waipio-gki/gki_kernel/dist
+        cp Image $GITHUB_WORKSPACE/kernel/kernel
+        curl -LO https://github.com/ShirkNeko/SukiSU_KernelPatch_patch/releases/download/0.11-beta/patch_linux
+        chmod +x patch_linux
+        ./patch_linux
+        rm -f Image
+        mv oImage Image
+        cp Image $GITHUB_WORKSPACE/AnyKernel3/Image
+        cp Image $GITHUB_WORKSPACE/kernel/patched_kernel
+  
+    - name: Upload AnyKernel3
+      uses: actions/upload-artifact@v4
+      with:
+        name: AnyKernel3_SukiSU_SUSFS_KPM_For_ACE2
+        path: ./AnyKernel3/*
+
+    - name: Upload Image
+      uses: actions/upload-artifact@v4
+      with:
+        name: Image-SukiSU-SUSFS-KPM_ACE2
+        path: kernel/kernel
+
+    - name: Upload Patched Image
+      uses: actions/upload-artifact@v4
+      with:
+        name: Patched_Image-SukiSU-SUSFS-KPM_ACE2
+        path: kernel/patched_kernel
