@@ -1,4 +1,4 @@
-name: 构建SM8475-ace2内核
+name: 构建SM8475-ace2-sukisu内核
 
 on:
   workflow_call:
