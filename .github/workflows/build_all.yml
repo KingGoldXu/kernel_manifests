@@ -7,7 +7,10 @@ on:
   #  - cron: '0 20 * * sun'
     
 jobs:
-  build_ace2:
+  build_ace2_sukisu:
+    uses: ./.github/workflows/sm8475-ace2-sukisu.yml
+
+  build_ace2_ksunext:
     uses: ./.github/workflows/sm8475-ace2.yml
     
   # build_11r:
