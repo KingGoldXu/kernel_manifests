@@ -179,12 +179,12 @@ jobs:
       run: |
         cd kernel/kernel_platform/out/msm-waipio-waipio-gki/gki_kernel/dist
         cp Image $GITHUB_WORKSPACE/kernel/kernel
+        cp Image $GITHUB_WORKSPACE/AnyKernel3/Image
         curl -LO https://github.com/ShirkNeko/SukiSU_KernelPatch_patch/releases/download/0.11-beta/patch_linux
         chmod +x patch_linux
         ./patch_linux
         rm -f Image
         mv oImage Image
-        cp Image $GITHUB_WORKSPACE/AnyKernel3/Image
         cp Image $GITHUB_WORKSPACE/kernel/patched_kernel
   
     - name: Upload AnyKernel3
