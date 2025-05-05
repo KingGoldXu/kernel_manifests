@@ -1,0 +1,110 @@
+diff -u a/crypto/Kconfig b/crypto/Kconfig
+--- a/crypto/Kconfig
++++ b/crypto/Kconfig
+@@ -1827,6 +1827,24 @@ config CRYPTO_LZ4HC
+ 	help
+ 	  This is the LZ4 high compression mode algorithm.
+ 
++config CRYPTO_LZ4K
++	tristate "LZ4K"
++	select CRYPTO_ALGAPI
++	select CRYPTO_ACOMP2
++	select LZ4K_COMPRESS
++	select LZ4K_DECOMPRESS
++	help
++	  LZ4K compression algorithm
++
++config CRYPTO_LZ4KD
++	tristate "LZ4KD"
++	select CRYPTO_ALGAPI
++	select CRYPTO_ACOMP2
++	select LZ4KD_COMPRESS
++	select LZ4KD_DECOMPRESS
++	help
++	  LZ4KD compression algorithm
++
+ config CRYPTO_ZSTD
+ 	tristate "Zstd compression algorithm"
+ 	select CRYPTO_ALGAPI
+
+diff -u a/crypto/Makefile b/crypto/Makefile
+--- a/crypto/Makefile
++++ b/crypto/Makefile
+@@ -153,6 +153,8 @@ obj-$(CONFIG_CRYPTO_AUTHENC) += authenc.o authencesn.o
+ obj-$(CONFIG_CRYPTO_LZO) += lzo.o lzo-rle.o
+ obj-$(CONFIG_CRYPTO_LZ4) += lz4.o
+ obj-$(CONFIG_CRYPTO_LZ4HC) += lz4hc.o
++obj-$(CONFIG_CRYPTO_LZ4K) += lz4k.o
++obj-$(CONFIG_CRYPTO_LZ4KD) += lz4kd.o
+ obj-$(CONFIG_CRYPTO_XXHASH) += xxhash_generic.o
+ obj-$(CONFIG_CRYPTO_842) += 842.o
+ obj-$(CONFIG_CRYPTO_RNG2) += rng.o
+
+diff -u a/drivers/block/zram/zcomp.c b/drivers/block/zram/zcomp.c
+--- a/drivers/block/zram/zcomp.c
++++ b/drivers/block/zram/zcomp.c
+@@ -23,6 +23,15 @@ static const char * const backends[] = {
+ #if IS_ENABLED(CONFIG_CRYPTO_LZ4HC)
+ 	"lz4hc",
+ #endif
++#if IS_ENABLED(CONFIG_CRYPTO_LZ4K)
++	"lz4k",
++#endif
++#if IS_ENABLED(CONFIG_CRYPTO_LZ4KD)
++	"lz4kd",
++#endif
++#if IS_ENABLED(CONFIG_CRYPTO_LZ4K_OPLUS)
++	"lz4k_oplus",
++#endif
+ #if IS_ENABLED(CONFIG_CRYPTO_842)
+ 	"842",
+ #endif
+
+diff -u a/lib/Kconfig b/lib/Kconfig
+--- a/lib/Kconfig
++++ b/lib/Kconfig
+@@ -3,6 +3,8 @@
+ # Library configuration
+ #
+ 
++source "lib/lz4k_oplus/Kconfig"
++
+ config BINARY_PRINTF
+ 	def_bool n
+ 
+@@ -310,6 +312,18 @@ config LZ4HC_COMPRESS
+ config LZ4_DECOMPRESS
+ 	tristate
+ 
++config LZ4K_COMPRESS
++	tristate
++
++config LZ4K_DECOMPRESS
++	tristate
++
++config LZ4KD_COMPRESS
++	tristate
++
++config LZ4KD_DECOMPRESS
++	tristate
++
+ config ZSTD_COMPRESS
+ 	select XXHASH
+ 	tristate
+
+diff -u a/lib/Makefile b/lib/Makefile
+--- a/lib/Makefile
++++ b/lib/Makefile
+@@ -187,6 +187,11 @@ obj-$(CONFIG_LZO_DECOMPRESS) += lzo/
+ obj-$(CONFIG_LZ4_COMPRESS) += lz4/
+ obj-$(CONFIG_LZ4HC_COMPRESS) += lz4/
+ obj-$(CONFIG_LZ4_DECOMPRESS) += lz4/
++obj-$(CONFIG_LZ4K_COMPRESS) += lz4k/
++obj-$(CONFIG_LZ4K_DECOMPRESS) += lz4k/
++obj-$(CONFIG_LZ4KD_COMPRESS) += lz4kd/
++obj-$(CONFIG_LZ4KD_DECOMPRESS) += lz4kd/
++obj-y += lz4k_oplus/
+ obj-$(CONFIG_ZSTD_COMPRESS) += zstd/
+ obj-$(CONFIG_ZSTD_DECOMPRESS) += zstd/
+ obj-$(CONFIG_XZ_DEC) += xz/
+
