@@ -1,0 +1,40 @@
+diff -u a/vendor/oplus/kernel/mm/hybridswap_zram/zcomp.c b/vendor/oplus/kernel/mm/hybridswap_zram/zcomp.c
+--- a/vendor/oplus/kernel/mm/hybridswap_zram/zcomp.c
++++ b/vendor/oplus/kernel/mm/hybridswap_zram/zcomp.c
+@@ -26,6 +26,15 @@ static const char * const backends[] = {
+ #if IS_ENABLED(CONFIG_CRYPTO_LZ4HC)
+ 	"lz4hc",
+ #endif
++#if IS_ENABLED(CONFIG_CRYPTO_LZ4K)
++	"lz4k",
++#endif
++#if IS_ENABLED(CONFIG_CRYPTO_LZ4KD)
++	"lz4kd",
++#endif
++#if IS_ENABLED(CONFIG_CRYPTO_LZ4K_OPLUS)
++	"lz4k_oplus",
++#endif
+ #if IS_ENABLED(CONFIG_CRYPTO_842)
+ 	"842",
+ #endif
+
+diff -u a/vendor/oplus/kernel/oplus_performance_5.10/mm/hybridswap_zram/zcomp.c b/vendor/oplus/kernel/oplus_performance_5.10/mm/hybridswap_zram/zcomp.c
+--- a/vendor/oplus/kernel/oplus_performance_5.10/mm/hybridswap_zram/zcomp.c
++++ b/vendor/oplus/kernel/oplus_performance_5.10/mm/hybridswap_zram/zcomp.c
+@@ -23,6 +23,15 @@ static const char * const backends[] = {
+ #if IS_ENABLED(CONFIG_CRYPTO_LZ4HC)
+ 	"lz4hc",
+ #endif
++#if IS_ENABLED(CONFIG_CRYPTO_LZ4K)
++	"lz4k",
++#endif
++#if IS_ENABLED(CONFIG_CRYPTO_LZ4KD)
++	"lz4kd",
++#endif
++#if IS_ENABLED(CONFIG_CRYPTO_LZ4K_OPLUS)
++	"lz4k_oplus",
++#endif
+ #if IS_ENABLED(CONFIG_CRYPTO_842)
+ 	"842",
+ #endif
+
