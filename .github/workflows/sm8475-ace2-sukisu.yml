@@ -147,7 +147,13 @@ jobs:
         patch -p1 -F 3 < zram.patch || true
         echo '完成zram补丁'
 
-        cd ..
+        cd ../..
+        cp kernel_manifests/zram/zram_patch/5.10/oplus_hybridswap_zram.patch ./
+        echo "正在打oplus_hybridswap_zram补丁"
+        patch -p1 -F 3 < oplus_hybridswap_zram.patch || true
+        echo '完成oplus_hybridswap_zram补丁'
+
+        cd kernel_platform
         # echo "CONFIG_ZSMALLOC=y" >> ./common/arch/arm64/configs/gki_defconfig
         # echo "CONFIG_ZRAM=y" >> ./common/arch/arm64/configs/gki_defconfig
         echo "CONFIG_MODULE_SIG=n" >> ./common/arch/arm64/configs/gki_defconfig
@@ -219,3 +225,9 @@ jobs:
       with:
         name: Patched_Image-SukiSU-SUSFS-KPM_ACE2
         path: kernel/patched_kernel
+
+    - name: Upload Oplus Kernel Modules
+      uses: actions/upload-artifact@v4
+      with:
+        name: Oplus_Kernel_Modules
+        path: /home/runner/work/kernel_manifests/kernel_manifests/kernel/kernel_platform/out/msm-waipio-waipio-gki/staging/lib/modules/*
