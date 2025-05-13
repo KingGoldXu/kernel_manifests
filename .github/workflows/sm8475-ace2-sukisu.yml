@@ -155,8 +155,8 @@ jobs:
         cat ./vendor/oplus/kernel/mm/hybridswap_zram/zcomp.c
 
         cd kernel_platform
-        # echo "CONFIG_ZSMALLOC=y" >> ./common/arch/arm64/configs/gki_defconfig
-        # echo "CONFIG_ZRAM=y" >> ./common/arch/arm64/configs/gki_defconfig
+        echo "CONFIG_ZSMALLOC=m" >> ./common/arch/arm64/configs/gki_defconfig
+        echo "CONFIG_ZRAM=m" >> ./common/arch/arm64/configs/gki_defconfig
         echo "CONFIG_MODULE_SIG=n" >> ./common/arch/arm64/configs/gki_defconfig
         echo "CONFIG_CRYPTO_LZ4HC=y" >> ./common/arch/arm64/configs/gki_defconfig
         echo "CONFIG_CRYPTO_LZ4K=y" >> ./common/arch/arm64/configs/gki_defconfig
