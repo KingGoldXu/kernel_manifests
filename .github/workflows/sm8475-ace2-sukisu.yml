@@ -163,7 +163,7 @@ jobs:
         echo "CONFIG_CRYPTO_LZ4KD=y" >> ./common/arch/arm64/configs/gki_defconfig
         echo "CONFIG_CRYPTO_842=y" >> ./common/arch/arm64/configs/gki_defconfig
         echo "CONFIG_CRYPTO_LZ4K_OPLUS=y" >> ./common/arch/arm64/configs/gki_defconfig
-        tail -10 ./common/arch/arm64/configs/gki_defconfig
+        # tail -10 ./common/arch/arm64/configs/gki_defconfig
         echo "CONFIG_ZSMALLOC=m" >> ./common/arch/arm64/configs/vendor/waipio_GKI.config
         echo "CONFIG_ZRAM=m" >> ./common/arch/arm64/configs/vendor/waipio_GKI.config
         # echo "CONFIG_MODULE_SIG=n" >> ./common/arch/arm64/configs/vendor/waipio_GKI.config
