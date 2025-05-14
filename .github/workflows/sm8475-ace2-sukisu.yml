@@ -155,8 +155,12 @@ jobs:
         cat ./vendor/oplus/kernel/mm/hybridswap_zram/zcomp.c
 
         cd kernel_platform
-        echo "CONFIG_ZSMALLOC=m" >> ./common/arch/arm64/configs/gki_defconfig
-        echo "CONFIG_ZRAM=m" >> ./common/arch/arm64/configs/gki_defconfig
+        echo "CONFIG_THP_ZSMALLOC=m" >> ./common/arch/arm64/configs/gki_defconfig
+        echo "CONFIG_HYBRIDSWAP_ZRAM=m" >> ./common/arch/arm64/configs/gki_defconfig
+        echo "CONFIG_HYBRIDSWAP=y" >> ./common/arch/arm64/configs/gki_defconfig
+        echo "CONFIG_HYBRIDSWAP_SWAPD=y" >> ./common/arch/arm64/configs/gki_defconfig
+        echo "CONFIG_HYBRIDSWAP_CORE=y" >> ./common/arch/arm64/configs/gki_defconfig
+        echo "CONFIG_CRYPTO_ZSTDN=m" >> ./common/arch/arm64/configs/gki_defconfig
         echo "CONFIG_MODULE_SIG=n" >> ./common/arch/arm64/configs/gki_defconfig
         echo "CONFIG_CRYPTO_LZ4HC=y" >> ./common/arch/arm64/configs/gki_defconfig
         echo "CONFIG_CRYPTO_LZ4K=y" >> ./common/arch/arm64/configs/gki_defconfig
@@ -164,20 +168,13 @@ jobs:
         echo "CONFIG_CRYPTO_842=y" >> ./common/arch/arm64/configs/gki_defconfig
         echo "CONFIG_CRYPTO_LZ4K_OPLUS=y" >> ./common/arch/arm64/configs/gki_defconfig
 
-        echo "mm/zsmalloc.ko" >> ./common/android/gki_aarch64_modules
+        echo "mm/oplus_mm/thp_zsmalloc/oplus_bsp_zsmalloc.ko" >> ./common/android/gki_aarch64_modules
         echo "crypto/lzo.ko" >> ./common/android/gki_aarch64_modules
         echo "crypto/lzo-rle.ko" >> ./common/android/gki_aarch64_modules
-        echo "drivers/block/zram/zram.ko" >> ./common/android/gki_aarch64_modules
+        echo "mm/oplus_mm/hybridswap_zram/oplus_bsp_hybridswap_zram.ko" >> ./common/android/gki_aarch64_modules
+        echo "mm/oplus_mm/hybridswap_zram/zstd/crypto_zstdn.ko" >> ./common/android/gki_aarch64_modules
 
         # tail -10 ./common/arch/arm64/configs/gki_defconfig
-        # echo "CONFIG_ZSMALLOC=m" >> ./common/arch/arm64/configs/vendor/waipio_GKI.config
-        # echo "CONFIG_ZRAM=m" >> ./common/arch/arm64/configs/vendor/waipio_GKI.config
-        # echo "CONFIG_MODULE_SIG=n" >> ./common/arch/arm64/configs/vendor/waipio_GKI.config
-        # echo "CONFIG_CRYPTO_LZ4HC=y" >> ./common/arch/arm64/configs/vendor/waipio_GKI.config
-        # echo "CONFIG_CRYPTO_LZ4K=y" >> ./common/arch/arm64/configs/vendor/waipio_GKI.config
-        # echo "CONFIG_CRYPTO_LZ4KD=y" >> ./common/arch/arm64/configs/vendor/waipio_GKI.config
-        # echo "CONFIG_CRYPTO_842=y" >> ./common/arch/arm64/configs/vendor/waipio_GKI.config
-        # echo "CONFIG_CRYPTO_LZ4K_OPLUS=y" >> ./common/arch/arm64/configs/vendor/waipio_GKI.config
 
         #if [ "${{ github.event.inputs.KERNEL_VERSION }}" != "6.6" ] && [ "${{ github.event.inputs.KERNEL_VERSION }}" != "5.10" ]; then
         #  sed -i 's/CONFIG_MODULE_SIG=y/CONFIG_MODULE_SIG=n/g' ./common/arch/arm64/configs/gki_defconfig
