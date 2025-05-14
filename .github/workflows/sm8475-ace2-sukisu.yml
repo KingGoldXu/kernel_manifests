@@ -248,3 +248,9 @@ jobs:
         name: Oplus_Kernel_Modules
         path: /home/runner/work/kernel_manifests/kernel_manifests/kernel/kernel_platform/out/msm-waipio-waipio-gki/dist/oplus_bsp_hybridswap_zram.ko
         # path: /home/runner/work/kernel_manifests/kernel_manifests/kernel/kernel_platform/out/msm-waipio-waipio-gki/staging/lib/modules/5.10.*/kernel/*
+
+    - name: Upload ZRAM KO
+      uses: actions/upload-artifact@v4
+      with:
+        name: ZRAM_KO
+        path: /home/runner/work/kernel_manifests/kernel_manifests/kernel/kernel_platform/out/msm-waipio-waipio-gki/dist/zram.ko
