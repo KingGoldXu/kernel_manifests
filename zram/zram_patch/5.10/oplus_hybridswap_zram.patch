@@ -1,13 +1,12 @@
 diff -u a/vendor/oplus/kernel/mm/hybridswap_zram/Kconfig b/vendor/oplus/kernel/mm/hybridswap_zram/Kconfig
 --- a/vendor/oplus/kernel/mm/hybridswap_zram/Kconfig
 +++ b/vendor/oplus/kernel/mm/hybridswap_zram/Kconfig
-@@ -3,6 +3,9 @@ config HYBRIDSWAP_ZRAM
+@@ -3,6 +3,8 @@ config HYBRIDSWAP_ZRAM
  	tristate "Compressed RAM block device support"
  	depends on BLOCK && SYSFS && (THP_ZSMALLOC||ZSMALLOC) && CRYPTO && !ZRAM
  	select CRYPTO_LZO
 +	select CRYPTO_LZ4K
 +	select CRYPTO_LZ4KD
-+	select CRYPTO_842
  	default n
  	help
  	  Creates virtual block devices called /dev/zramX (X = 0, 1, ...).
