@@ -139,7 +139,7 @@ jobs:
         cp -r ../kernel_manifests/zram/lz4k/include/linux/* ./common/include/linux
         cp -r ../kernel_manifests/zram/lz4k/lib/* ./common/lib
         cp -r ../kernel_manifests/zram/lz4k/crypto/* ./common/crypto
-        cp -r ../kernel_manifests/zram/lz4k_oplus ./common/lib/
+        # cp -r ../kernel_manifests/zram/lz4k_oplus ./common/lib/
 
         cd common
         cp ../../kernel_manifests/zram/zram_patch/5.10/zram.patch ./
@@ -155,19 +155,19 @@ jobs:
         cat ./vendor/oplus/kernel/mm/hybridswap_zram/zcomp.c
 
         cd kernel_platform
-        echo "CONFIG_ZSMALLOC=m" >> ./common/arch/arm64/configs/gki_defconfig
-        echo "CONFIG_ZRAM=m" >> ./common/arch/arm64/configs/gki_defconfig
+        # echo "CONFIG_ZSMALLOC=m" >> ./common/arch/arm64/configs/gki_defconfig
+        # echo "CONFIG_ZRAM=m" >> ./common/arch/arm64/configs/gki_defconfig
         echo "CONFIG_MODULE_SIG=n" >> ./common/arch/arm64/configs/gki_defconfig
-        echo "CONFIG_CRYPTO_LZ4HC=y" >> ./common/arch/arm64/configs/gki_defconfig
-        echo "CONFIG_CRYPTO_LZ4K=y" >> ./common/arch/arm64/configs/gki_defconfig
-        echo "CONFIG_CRYPTO_LZ4KD=y" >> ./common/arch/arm64/configs/gki_defconfig
-        echo "CONFIG_CRYPTO_842=y" >> ./common/arch/arm64/configs/gki_defconfig
-        echo "CONFIG_CRYPTO_LZ4K_OPLUS=y" >> ./common/arch/arm64/configs/gki_defconfig
+        # echo "CONFIG_CRYPTO_LZ4HC=y" >> ./common/arch/arm64/configs/gki_defconfig
+        # echo "CONFIG_CRYPTO_LZ4K=y" >> ./common/arch/arm64/configs/gki_defconfig
+        # echo "CONFIG_CRYPTO_LZ4KD=y" >> ./common/arch/arm64/configs/gki_defconfig
+        # echo "CONFIG_CRYPTO_842=y" >> ./common/arch/arm64/configs/gki_defconfig
+        # echo "CONFIG_CRYPTO_LZ4K_OPLUS=y" >> ./common/arch/arm64/configs/gki_defconfig
 
-        echo "mm/zsmalloc.ko" >> ./common/android/gki_aarch64_modules
-        echo "crypto/lzo.ko" >> ./common/android/gki_aarch64_modules
-        echo "crypto/lzo-rle.ko" >> ./common/android/gki_aarch64_modules
-        echo "drivers/block/zram/zram.ko" >> ./common/android/gki_aarch64_modules
+        # echo "mm/zsmalloc.ko" >> ./common/android/gki_aarch64_modules
+        # echo "crypto/lzo.ko" >> ./common/android/gki_aarch64_modules
+        # echo "crypto/lzo-rle.ko" >> ./common/android/gki_aarch64_modules
+        # echo "drivers/block/zram/zram.ko" >> ./common/android/gki_aarch64_modules
 
         # tail -10 ./common/arch/arm64/configs/gki_defconfig
         # echo "CONFIG_ZSMALLOC=m" >> ./common/arch/arm64/configs/vendor/waipio_GKI.config
@@ -246,11 +246,5 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: Oplus_Kernel_Modules
-        path: /home/runner/work/kernel_manifests/kernel_manifests/kernel/kernel_platform/out/msm-waipio-waipio-gki/dist/oplus_bsp_hybridswap_zram.ko
+        path: /home/runner/work/kernel_manifests/kernel_manifests/kernel/kernel_platform/out/msm-waipio-waipio-gki/dist/*
         # path: /home/runner/work/kernel_manifests/kernel_manifests/kernel/kernel_platform/out/msm-waipio-waipio-gki/staging/lib/modules/5.10.*/kernel/*
-
-    - name: Upload ZRAM KO
-      uses: actions/upload-artifact@v4
-      with:
-        name: ZRAM_KO
-        path: /home/runner/work/kernel_manifests/kernel_manifests/kernel/kernel_platform/out/msm-waipio-waipio-gki/dist/zram.ko
