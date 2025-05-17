@@ -43,7 +43,7 @@ diff -u a/crypto/Makefile b/crypto/Makefile
 diff -u a/drivers/block/zram/zcomp.c b/drivers/block/zram/zcomp.c
 --- a/drivers/block/zram/zcomp.c
 +++ b/drivers/block/zram/zcomp.c
-@@ -23,6 +23,15 @@ static const char * const backends[] = {
+@@ -23,6 +23,12 @@ static const char * const backends[] = {
  #if IS_ENABLED(CONFIG_CRYPTO_LZ4HC)
  	"lz4hc",
  #endif
@@ -53,9 +53,6 @@ diff -u a/drivers/block/zram/zcomp.c b/drivers/block/zram/zcomp.c
 +#if IS_ENABLED(CONFIG_CRYPTO_LZ4KD)
 +	"lz4kd",
 +#endif
-+#if IS_ENABLED(CONFIG_CRYPTO_LZ4K_OPLUS)
-+	"lz4k_oplus",
-+#endif
  #if IS_ENABLED(CONFIG_CRYPTO_842)
  	"842",
  #endif
@@ -63,16 +60,7 @@ diff -u a/drivers/block/zram/zcomp.c b/drivers/block/zram/zcomp.c
 diff -u a/lib/Kconfig b/lib/Kconfig
 --- a/lib/Kconfig
 +++ b/lib/Kconfig
-@@ -3,6 +3,8 @@
- # Library configuration
- #
- 
-+source "lib/lz4k_oplus/Kconfig"
-+
- config BINARY_PRINTF
- 	def_bool n
- 
-@@ -310,6 +312,18 @@ config LZ4HC_COMPRESS
+@@ -310,6 +310,18 @@ config LZ4HC_COMPRESS
  config LZ4_DECOMPRESS
  	tristate
  
@@ -95,7 +83,7 @@ diff -u a/lib/Kconfig b/lib/Kconfig
 diff -u a/lib/Makefile b/lib/Makefile
 --- a/lib/Makefile
 +++ b/lib/Makefile
-@@ -187,6 +187,11 @@ obj-$(CONFIG_LZO_DECOMPRESS) += lzo/
+@@ -187,6 +187,10 @@ obj-$(CONFIG_LZO_DECOMPRESS) += lzo/
  obj-$(CONFIG_LZ4_COMPRESS) += lz4/
  obj-$(CONFIG_LZ4HC_COMPRESS) += lz4/
  obj-$(CONFIG_LZ4_DECOMPRESS) += lz4/
@@ -103,7 +91,6 @@ diff -u a/lib/Makefile b/lib/Makefile
 +obj-$(CONFIG_LZ4K_DECOMPRESS) += lz4k/
 +obj-$(CONFIG_LZ4KD_COMPRESS) += lz4kd/
 +obj-$(CONFIG_LZ4KD_DECOMPRESS) += lz4kd/
-+obj-y += lz4k_oplus/
  obj-$(CONFIG_ZSTD_COMPRESS) += zstd/
  obj-$(CONFIG_ZSTD_DECOMPRESS) += zstd/
  obj-$(CONFIG_XZ_DEC) += xz/

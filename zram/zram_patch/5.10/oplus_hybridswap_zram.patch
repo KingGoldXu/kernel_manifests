@@ -1,65 +1,30 @@
-diff -u a/vendor/oplus/kernel/mm/hybridswap_zram/zcomp.c b/vendor/oplus/kernel/mm/hybridswap_zram/zcomp.c
---- a/vendor/oplus/kernel/mm/hybridswap_zram/zcomp.c
-+++ b/vendor/oplus/kernel/mm/hybridswap_zram/zcomp.c
-@@ -26,6 +26,15 @@ static const char * const backends[] = {
- #if IS_ENABLED(CONFIG_CRYPTO_LZ4HC)
- 	"lz4hc",
- #endif
-+// #if IS_ENABLED(CONFIG_CRYPTO_LZ4K)
-+	"lz4k",
-+// #endif
-+// #if IS_ENABLED(CONFIG_CRYPTO_LZ4KD)
-+	"lz4kd",
-+// #endif
-+// #if IS_ENABLED(CONFIG_CRYPTO_LZ4K_OPLUS)
-+	"lz4k_oplus",
-+// #endif
- #if IS_ENABLED(CONFIG_CRYPTO_842)
- 	"842",
- #endif
-
-diff -u a/vendor/oplus/kernel/oplus_performance_5.10/mm/hybridswap_zram/zcomp.c b/vendor/oplus/kernel/oplus_performance_5.10/mm/hybridswap_zram/zcomp.c
---- a/vendor/oplus/kernel/oplus_performance_5.10/mm/hybridswap_zram/zcomp.c
-+++ b/vendor/oplus/kernel/oplus_performance_5.10/mm/hybridswap_zram/zcomp.c
-@@ -23,6 +23,15 @@ static const char * const backends[] = {
- #if IS_ENABLED(CONFIG_CRYPTO_LZ4HC)
- 	"lz4hc",
- #endif
-+// #if IS_ENABLED(CONFIG_CRYPTO_LZ4K)
-+	"lz4k",
-+// #endif
-+// #if IS_ENABLED(CONFIG_CRYPTO_LZ4KD)
-+	"lz4kd",
-+// #endif
-+// #if IS_ENABLED(CONFIG_CRYPTO_LZ4K_OPLUS)
-+	"lz4k_oplus",
-+// #endif
- #if IS_ENABLED(CONFIG_CRYPTO_842)
- 	"842",
- #endif
-
 diff -u a/vendor/oplus/kernel/mm/hybridswap_zram/Kconfig b/vendor/oplus/kernel/mm/hybridswap_zram/Kconfig
 --- a/vendor/oplus/kernel/mm/hybridswap_zram/Kconfig
 +++ b/vendor/oplus/kernel/mm/hybridswap_zram/Kconfig
-@@ -1,7 +1,7 @@
- # SPDX-License-Identifier: GPL-2.0
- config HYBRIDSWAP_ZRAM
-        tristate "Compressed RAM block device support"
--       depends on BLOCK && SYSFS && (THP_ZSMALLOC||ZSMALLOC) && CRYPTO && !ZRAM
-+       depends on BLOCK && SYSFS && (THP_ZSMALLOC||ZSMALLOC) && CRYPTO
-        select CRYPTO_LZO
-        default n
-        help
+@@ -3,6 +3,9 @@ config HYBRIDSWAP_ZRAM
+ 	tristate "Compressed RAM block device support"
+ 	depends on BLOCK && SYSFS && (THP_ZSMALLOC||ZSMALLOC) && CRYPTO && !ZRAM
+ 	select CRYPTO_LZO
++	select CRYPTO_LZ4K
++	select CRYPTO_LZ4KD
++	select CRYPTO_842
+ 	default n
+ 	help
+ 	  Creates virtual block devices called /dev/zramX (X = 0, 1, ...).
 
-diff -u a/vendor/oplus/kernel/oplus_performance_5.10/mm/hybridswap_zram/Kconfig b/vendor/oplus/kernel/oplus_performance_5.10/mm/hybridswap_zram/Kconfig
---- a/vendor/oplus/kernel/oplus_performance_5.10/mm/hybridswap_zram/Kconfig
-+++ b/vendor/oplus/kernel/oplus_performance_5.10/mm/hybridswap_zram/Kconfig
-@@ -1,7 +1,7 @@
- # SPDX-License-Identifier: GPL-2.0
- config HYBRIDSWAP_ZRAM
-        tristate "Compressed RAM block device support"
--       depends on BLOCK && SYSFS && ZSMALLOC && CRYPTO && !ZRAM
-+       depends on BLOCK && SYSFS && ZSMALLOC && CRYPTO
-        select CRYPTO_LZO
-        help
-          Creates virtual block devices called /dev/zramX (X = 0, 1, ...).
+diff -u a/vendor/oplus/kernel/mm/hybridswap_zram/zcomp.c b/vendor/oplus/kernel/mm/hybridswap_zram/zcomp.c
+--- a/vendor/oplus/kernel/mm/hybridswap_zram/zcomp.c
++++ b/vendor/oplus/kernel/mm/hybridswap_zram/zcomp.c
+@@ -26,6 +26,12 @@ static const char * const backends[] = {
+ #if IS_ENABLED(CONFIG_CRYPTO_LZ4HC)
+ 	"lz4hc",
+ #endif
++#if IS_ENABLED(CONFIG_CRYPTO_LZ4K)
++	"lz4k",
++#endif
++#if IS_ENABLED(CONFIG_CRYPTO_LZ4KD)
++	"lz4kd",
++#endif
+ #if IS_ENABLED(CONFIG_CRYPTO_842)
+ 	"842",
+ #endif
