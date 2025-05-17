@@ -169,9 +169,9 @@ jobs:
         # echo "CONFIG_CRYPTO_LZ4K_OPLUS=y" >> ./common/arch/arm64/configs/gki_defconfig
 
         # echo "mm/zsmalloc.ko" >> ./common/android/gki_aarch64_modules
-        echo "crypto/lzo.ko" >> ./common/android/gki_aarch64_modules
-        echo "crypto/lzo-rle.ko" >> ./common/android/gki_aarch64_modules
-        echo "drivers/block/zram/zram.ko" >> ./common/android/gki_aarch64_modules
+        # echo "crypto/lzo.ko" >> ./common/android/gki_aarch64_modules
+        # echo "crypto/lzo-rle.ko" >> ./common/android/gki_aarch64_modules
+        # echo "drivers/block/zram/zram.ko" >> ./common/android/gki_aarch64_modules
 
         # tail -10 ./common/arch/arm64/configs/gki_defconfig
         # echo "CONFIG_ZSMALLOC=m" >> ./common/arch/arm64/configs/vendor/waipio_GKI.config
