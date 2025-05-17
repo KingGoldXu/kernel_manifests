@@ -146,6 +146,10 @@ jobs:
         echo "正在打zram补丁"
         patch -p1 -F 3 < zram.patch || true
         echo '完成zram补丁'
+        cp ../../kernel_manifests/zram/zram_patch/5.10/disable_oplus_hybridswap_zram.patch ./
+        echo "正在打disable_oplus_hybridswap_zram补丁"
+        patch -p1 -F 3 < disable_oplus_hybridswap_zram.patch || true
+        echo '完成disable_oplus_hybridswap_zram补丁'
 
         cd ../..
         cp kernel_manifests/zram/zram_patch/5.10/oplus_hybridswap_zram.patch ./

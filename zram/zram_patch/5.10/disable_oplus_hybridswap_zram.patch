@@ -1,0 +1,21 @@
+diff -u a/kernel/module.c b/kernel/module.c
+--- a/kernel/module.c
++++ b/kernel/module.c
+@@ -3564,7 +3564,7 @@
+ }
+ 
+ /* module_blacklist is a comma-separated list of module names */
+-static char *module_blacklist;
++static char *module_blacklist="oplus_bsp_hybridswap_zram,oplus_bsp_zram_opt,oplus_bsp_zsmalloc";
+ static bool blacklisted(const char *module_name)
+ {
+ 	const char *p;
+@@ -4028,7 +4028,7 @@
+ 	 * if it's blacklisted.
+ 	 */
+ 	if (blacklisted(info->name)) {
+-		err = -EPERM;
++		// err = -EPERM;
+ 		pr_err("Module %s is blacklisted\n", info->name);
+ 		goto free_copy;
+ 	}
