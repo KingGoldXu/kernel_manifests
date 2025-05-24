@@ -58,7 +58,7 @@ jobs:
     - name: 添加SukiSU
       run: |
         cd kernel/kernel_platform
-        curl -LSs "https://raw.githubusercontent.com/ShirkNeko/SukiSU-Ultra/main/kernel/setup.sh" | bash -s susfs-dev
+        curl -LSs "https://raw.githubusercontent.com/SukiSU-Ultra/SukiSU-Ultra/main/kernel/setup.sh" | bash -s susfs-dev
         cd ./KernelSU
         KSU_VERSION=$(expr $(/usr/bin/git rev-list --count main) "+" 10606)
         export KSU_VERSION=$KSU_VERSION
@@ -68,7 +68,7 @@ jobs:
       run: |
         cd kernel
         git clone https://gitlab.com/simonpunk/susfs4ksu.git -b gki-android12-5.10
-        git clone https://github.com/ShirkNeko/SukiSU_patch.git
+        git clone https://github.com/SukiSU-Ultra/SukiSU_patch.git
         cd kernel_platform
 
         # Copy SUSFS patches
@@ -221,7 +221,7 @@ jobs:
         cd kernel/kernel_platform/out/msm-waipio-waipio-gki/gki_kernel/dist
         cp Image $GITHUB_WORKSPACE/kernel/kernel
         cp Image $GITHUB_WORKSPACE/AnyKernel3/Image
-        curl -LO https://github.com/ShirkNeko/SukiSU_KernelPatch_patch/releases/download/0.11-beta/patch_linux
+        curl -LO https://github.com/SukiSU-Ultra/SukiSU_KernelPatch_patch/releases/download/0.11-beta/patch_linux
         chmod +x patch_linux
         ./patch_linux
         rm -f Image
