@@ -178,6 +178,10 @@ jobs:
         echo "CONFIG_HFS_FS=y" >> ./common/arch/arm64/configs/gki_defconfig
         echo "CONFIG_NTFS_FS=y" >> ./common/arch/arm64/configs/gki_defconfig
 
+        # add tcp bbr
+        echo "CONFIG_TCP_CONG_BBR=y" >> ./common/arch/arm64/configs/gki_defconfig
+        echo "CONFIG_DEFAULT_BBR=y" >> ./common/arch/arm64/configs/gki_defconfig
+
         # tail -10 ./common/arch/arm64/configs/gki_defconfig
         # echo "CONFIG_ZSMALLOC=m" >> ./common/arch/arm64/configs/vendor/waipio_GKI.config
         # echo "CONFIG_ZRAM=m" >> ./common/arch/arm64/configs/vendor/waipio_GKI.config
