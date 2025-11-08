@@ -76,6 +76,14 @@ jobs:
         cp ../susfs4ksu/kernel_patches/fs/* ./common/fs/
         cp ../susfs4ksu/kernel_patches/include/linux/* ./common/include/linux/
 
+        # Fake Patch to fix failures
+        if ! grep -qxF $'\tif (!vma_pages(vma))' ./fs/proc/task_mmu.c; then
+          echo "未找到 vma_pages,正在进行补丁修复"
+          if grep -qxF $'\t\tgoto show_pad;' ./fs/proc/task_mmu.c; then
+            sed -i -e 's/goto show_pad;/return 0;/' ./fs/proc/task_mmu.c
+          fi
+        fi
+
         echo "正在给内核打susfs补丁"
         cd ./common
         patch -p1 < 50_add_susfs_in_gki-android12-5.10.patch
@@ -91,9 +99,9 @@ jobs:
     - name: Apply New Hooks Patches
       run: |
         cd kernel/kernel_platform/common
-        cp ../../SukiSU_patch/hooks/syscall_hooks.patch ./
+        cp ../../SukiSU_patch/hooks/scope_min_manual_hooks_v1.6.patch ./
         echo "正在打vfs补丁"
-        patch -p1 -F 3 < syscall_hooks.patch
+        patch -p1 -F 3 < scope_min_manual_hooks_v1.6.patch
         echo "完成"
 
         #  cp ../../SukiSU_patch/other/lz4k_patch/${{ github.event.inputs.KERNEL_VERSION }}/lz4kd.patch ./
@@ -114,13 +122,12 @@ jobs:
           
         # Add SUSFS configuration settings
         echo "CONFIG_KSU_SUSFS=y" >> ./common/arch/arm64/configs/gki_defconfig
-        echo "CONFIG_KSU_SUSFS_HAS_MAGIC_MOUNT=y" >> ./common/arch/arm64/configs/gki_defconfig
+        echo "CONFIG_KSU_SUSFS_SUS_MAP=y" >> ./common/arch/arm64/configs/gki_defconfig
         echo "CONFIG_KSU_SUSFS_SUS_PATH=y" >> ./common/arch/arm64/configs/gki_defconfig
         echo "CONFIG_KSU_SUSFS_SUS_MOUNT=y" >> ./common/arch/arm64/configs/gki_defconfig
         echo "CONFIG_KSU_SUSFS_AUTO_ADD_SUS_KSU_DEFAULT_MOUNT=y" >> ./common/arch/arm64/configs/gki_defconfig
         echo "CONFIG_KSU_SUSFS_AUTO_ADD_SUS_BIND_MOUNT=y" >> ./common/arch/arm64/configs/gki_defconfig
         echo "CONFIG_KSU_SUSFS_SUS_KSTAT=y" >> ./common/arch/arm64/configs/gki_defconfig
-        echo "CONFIG_KSU_SUSFS_SUS_OVERLAYFS=n" >> ./common/arch/arm64/configs/gki_defconfig
         echo "CONFIG_KSU_SUSFS_TRY_UMOUNT=y" >> ./common/arch/arm64/configs/gki_defconfig
         echo "CONFIG_KSU_SUSFS_AUTO_ADD_TRY_UMOUNT_FOR_BIND_MOUNT=y" >> ./common/arch/arm64/configs/gki_defconfig
         echo "CONFIG_KSU_SUSFS_SPOOF_UNAME=y" >> ./common/arch/arm64/configs/gki_defconfig
